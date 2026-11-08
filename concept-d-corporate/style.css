@@ -1,0 +1,448 @@
+/* ── Concept D — Corporate site / brand-native ─────────────────────
+   The advertiser's own corporate website, extended into a 300x600 ad.
+   Every source token below was read from that site's theme CSS and
+   scaled to banner size; scaffold.py fills them from brand.json → "corp"
+   (primary, secondary, grad_from, grad_to, band_to, btn_from, btn_to,
+   btn_ink, rule, page_bg, header_bg, text, btn_radius, font_head,
+   font_body, logo_w, logo_h).
+
+   Source tokens are the ONLY place colours are defined; everything else
+   derives from them (color-mix: Chrome 111+ / Safari 16.2+). To re-brand,
+   change brand.json "corp", the fonts link, and assets/logo.svg.
+
+   Each slide is one homepage module, built from shared parts:
+     .m-hero   hero slider: photo + shade, gradient text panel
+     .m-stats  stats module: heading font values over accent bars
+     .m-split  image + text split: photo, white card, bullets
+     .m-band   overlay band: photo under the gradient overlay, centred copy
+   Parts: .d-photo, .d-stats > .d-stat (.d-value + .d-label), .d-vs,
+   .d-list (accent bullets), .d-arrows (arrow sub-bullets), .d-rule, .nw. ── */
+:root {
+  /* Source tokens — the corporate site's theme (brand.json "corp") */
+  --primary:    #EE4500;    /* headings, stat values, nav, footer strip */
+  --secondary:  #FFB901;  /* underline bars, bullet markers, active-nav rule */
+  --grad-from:  #F9CEA8;  /* hero panel gradient, left */
+  --grad-to:    #FCF9D8;    /* hero panel gradient, right */
+  --band-to:    #FCF9D8;    /* overlay / alerts band gradient, bright end */
+  --btn-from:   #EE4500;   /* .btn border gradient, left stop */
+  --btn-to:     #EE4500;     /* .btn border gradient, right stop */
+  --page-bg:    #F5F5F5;       /* page background */
+  --header-bg:  #FFFFFF;     /* header bar */
+  --white:      #FFFFFF;
+  --text:       #463C3E;       /* body copy */
+  --btn-ink:    #FFFFFF;    /* .btn label colour */
+  --rule:       #E6E1DE;       /* <hr> between bullet groups, bottom-block hairline */
+  --shade:      #000000;             /* photo shade, header shadow */
+  --btn-radius: 33px;
+
+  --primary-2:  #EC4824;              /* the awards band title (h2 rgb(236,72,36)) */
+  --grey:       #C4CBD2;              /* footer top border, inactive slider dots */
+  --link-grey:  #8796B2;              /* footer link grey, figure captions */
+
+  /* Derived */
+  --card-bg:     var(--white);
+  --on-dark:     var(--white);
+  --on-dark-2:   color-mix(in srgb, var(--white) 90%, transparent);
+  --hero-shade:  color-mix(in srgb, var(--shade) 40%, transparent);   /* slider photo: #000 @ .4 */
+  --panel-grad:  linear-gradient(to left,
+                   color-mix(in srgb, var(--grad-to) 80%, transparent),
+                   color-mix(in srgb, var(--grad-from) 80%, transparent));
+  --band-grad:   linear-gradient(267.38deg, var(--band-to) -42.82%, var(--primary) 88.88%);
+  --band-alpha:  0.93;        /* the overlay's opacity on the site */
+  --band-size:   125% 100%;   /* a 300px crop of the full-width band: its brightest end sits off-canvas so white copy holds >= 4.5:1 */
+  --btn-grad:    linear-gradient(to right, var(--btn-from), var(--btn-to));
+  --hdr-shadow:  0 0 5px color-mix(in srgb, var(--shade) 30%, transparent);
+  --card-shadow: 0 1px 3px color-mix(in srgb, var(--primary) 8%, transparent);
+
+  /* Type — the site's own Google Fonts (the link in index.html <head>) */
+  --font-head: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --ease:      cubic-bezier(0.16,1,0.3,1);
+
+  /* Geometry (fixed 300x600 stage) */
+  --gutter:    14px;
+  --hdr-h:     46px;          /* white site header */
+  --logo-w:    70px;      /* assets/logo.svg at its display size (brand.json corp.logo_w / logo_h) */
+  --logo-h:    24px;
+  --bf-pad:    9px;           /* bottom block: space above the controls row */
+  --ctrl-h:    22px;          /* dots + arrows row */
+  --bf-gap:    8px;           /* controls → CTA */
+  --cta-h:     36px;
+  --bf-gap-2:  8px;           /* CTA → footer strip */
+  --foot-h:    54px;          /* footer strip: the five-line disclosure (7.3px / 9.6px) plus padding */
+  --bf-h:      calc(var(--bf-pad) + var(--ctrl-h) + var(--bf-gap) + var(--cta-h) + var(--bf-gap-2) + var(--foot-h));
+  --bar-w:     28px;          /* accent underline bar (site: 40x4) */
+  --bar-h:     3px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:300px; height:600px; overflow:hidden; background:var(--page-bg); }
+body { font-family:var(--font-body); color:var(--text); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+a { text-decoration:none; color:inherit; }
+button { border:0; background:none; font:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+ul { list-style:none; }
+.nw { white-space:nowrap; }                       /* keeps hyphenated names and compounds unbroken */
+.slide p, .slide li { text-wrap-style:pretty; }   /* no one-word last lines; style only: the text-wrap shorthand would reset white-space:nowrap on .d-value */
+
+/* ── Canvas ───────────────────────────────────────────────────────── */
+#banner {
+  position:relative;
+  width:300px;
+  height:600px;
+  overflow:hidden;
+  cursor:pointer;
+  background:var(--page-bg);
+}
+
+/* ── Slide stack: each slide fills only the space between the header
+   and the bottom block, so slide copy can never run under the chrome. ── */
+#slides { position:absolute; inset:0; z-index:1; }
+.slide {
+  position:absolute;
+  left:0; right:0;
+  top:var(--hdr-h);
+  bottom:var(--bf-h);
+  overflow:hidden;
+  opacity:0;
+  z-index:1;
+  pointer-events:none;
+  transition:opacity 0.9s ease;
+}
+.slide.active { opacity:1; z-index:2; pointer-events:auto; }
+
+/* Content rises in on each slide change */
+.slide > :not(.d-photo) {
+  transform:translateY(10px);
+  transition:transform 0.9s var(--ease);
+}
+.slide.active > :not(.d-photo) { transform:none; }
+
+/* ── Shared parts ─────────────────────────────────────────────────── */
+/* Full-bleed photo (hero slider, overlay band) */
+.d-photo {
+  position:absolute;
+  inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  z-index:0;
+  user-select:none;
+  -webkit-user-drag:none;
+  animation:d-zoom 9s ease-out infinite alternate;
+}
+@keyframes d-zoom { from { transform:scale(1); } to { transform:scale(1.06); } }
+
+/* Stat (.module-stats .stat): heading-font value, accent bar, body label */
+.d-value {
+  font-family:var(--font-head);
+  font-weight:500;
+  line-height:1.15;
+  color:var(--primary);
+  white-space:nowrap;
+}
+.d-vs { font-size:0.62em; font-weight:400; }
+.d-label {
+  font-size:10px;
+  line-height:1.45;
+  color:var(--text);
+}
+.d-label::before {                 /* .stat .description:before — the 40x4 bar */
+  content:'';
+  display:block;
+  width:var(--bar-w);
+  height:var(--bar-h);
+  margin:6px 0 7px;
+  background:var(--secondary);
+  transform:scaleX(0);
+  transform-origin:left center;
+  transition:transform 0.7s var(--ease) 0.35s;
+}
+.slide.active .d-label::before { transform:none; }
+
+/* Bulleted copy (.content-bg-white ul): accent markers, body text */
+.d-list { list-style:disc; padding-left:13px; }
+.d-list > li {
+  font-size:10px;
+  line-height:1.45;
+  color:var(--text);
+}
+.d-list > li::marker { color:var(--secondary); }
+/* Sub-bullets (.content-bg-white ul li ul li): primary text, accent arrow */
+.d-arrows { list-style:none; margin-top:6px; }
+.d-arrows li {
+  position:relative;
+  padding-left:15px;
+  margin-top:4px;
+  font-size:10px;
+  line-height:1.4;
+  color:var(--primary);
+}
+.d-arrows li::before {             /* the site's arrow icon, as a mask so it takes the token colour */
+  content:'';
+  position:absolute;
+  left:0; top:2px;
+  width:10px; height:10px;
+  background:var(--secondary);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 25'%3E%3Cpath d='M12 4.18066L10.585 5.59566L16.17 11.1807H4V13.1807H16.17L10.585 18.7657L12 20.1807L20 12.1807L12 4.18066Z'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 25'%3E%3Cpath d='M12 4.18066L10.585 5.59566L16.17 11.1807H4V13.1807H16.17L10.585 18.7657L12 20.1807L20 12.1807L12 4.18066Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.d-rule { border:0; border-top:1px solid var(--rule); margin:10px 0; }  /* .content-bg-white hr */
+
+/* ── Module: hero (.hero-section): peach-to-cream gradient, vermilion title, the scanner illustration ─ */
+.m-hero { background:linear-gradient(72deg, var(--grad-from) 0%, var(--grad-to) 100%); }
+.hero-art {
+  position:absolute;
+  top:6px; right:8px;
+  width:204px; height:auto;
+  z-index:1;
+  user-select:none; -webkit-user-drag:none;
+}
+.hero-copy { position:absolute; left:18px; right:16px; top:160px; z-index:2; }
+.hero-copy h2 {
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:19.5px;
+  line-height:1.13;
+  letter-spacing:-0.012em;
+  color:var(--primary);
+}
+.hero-desc {
+  margin-top:8px;
+  font-size:10.2px;
+  font-weight:700;
+  line-height:1.45;
+  color:var(--text);
+}
+.m-hero .d-stats { display:flex; gap:18px; margin-top:12px; }
+.m-hero .d-stat:first-child { flex:none; width:118px; }
+.m-hero .d-value { font-size:23px; font-weight:700; letter-spacing:-0.02em; }
+.m-hero .d-stat:last-child .d-value { font-size:15.5px; line-height:1.35; padding-top:5px; }
+.m-hero .d-label { font-size:9.2px; font-weight:500; line-height:1.4; color:var(--text); }
+.m-hero .d-label::before { margin:5px 0 6px; }
+
+/* ── Module: "Stay Ahead of the Narrative" (.features-split-section): orange blob ground, three vermilion-barred items, white card ─ */
+.m-features {
+  padding:15px 18px 0;
+  background:var(--page-bg) url("assets/slide-2-bg.jpg") center / cover no-repeat;
+}
+.m-features h2 {
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:19px;
+  line-height:1.15;
+  letter-spacing:-0.012em;
+  color:var(--text);
+}
+.feat { margin-top:9px; padding-left:10px; border-left:3px solid var(--primary); }
+.feat h3 {
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:9.6px;
+  letter-spacing:0.01em;
+  text-transform:uppercase;
+  color:var(--primary);
+}
+.feat p { margin-top:2px; font-size:10px; font-weight:500; line-height:1.4; color:var(--text); }
+.feat-card {
+  margin:12px 0 0;
+  padding:8px 8px 6px;
+  border-radius:14px;
+  background:var(--white);
+  box-shadow:0 8px 22px color-mix(in srgb, var(--shade) 10%, transparent);
+}
+.feat-card img { display:block; width:100%; height:auto; }
+.feat-card figcaption { margin-top:4px; font-size:6.8px; line-height:1.3; color:var(--text); opacity:.82; }
+
+/* ── Stats block, in the site's type ─────────────────────────────────── */
+.m-stats {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:0 20px 4px;
+  background:var(--page-bg);
+}
+.stats-head h2 {
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:19px;
+  line-height:1.17;
+  letter-spacing:-0.012em;
+  color:var(--text);
+  text-wrap:balance;
+}
+.stats-head p { margin-top:6px; font-size:8.4px; line-height:1.4; color:var(--text); opacity:.82; }
+.m-stats .d-stats { display:flex; flex-direction:column; gap:12px; margin-top:14px; }
+.m-stats .d-value { font-size:28px; font-weight:700; letter-spacing:-0.02em; }
+.m-stats .d-label { font-size:10px; line-height:1.42; }
+.m-stats .d-label::before { margin:4px 0 5px; }
+
+/* ── Module: Gartner awards band (.awards-section): vermilion rule, vermilion title, white card with two squares ─ */
+.m-awards { padding:0 18px; background:var(--page-bg); border-top:3px solid var(--primary); }
+.m-awards h2 {
+  margin-top:15px;
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:17.5px;
+  line-height:1.2;
+  letter-spacing:-0.012em;
+  color:var(--primary-2);
+}
+.aw-card {
+  position:relative;
+  margin-top:20px;
+  padding:16px 14px 14px;
+  background:var(--white);
+  box-shadow:0 8px 22px color-mix(in srgb, var(--shade) 8%, transparent);
+}
+.aw-card::before, .aw-card::after { content:''; position:absolute; width:15px; height:15px; }
+.aw-card::before { top:-8px; right:22px; background:var(--secondary); }
+.aw-card::after  { top:7px; right:-7px; background:var(--primary); }
+.aw-card .d-arrows { margin-top:0; }
+.aw-card .d-arrows li { margin-top:10px; font-size:10.4px; line-height:1.4; color:var(--text); }
+.aw-card .d-arrows li:first-child { margin-top:0; }
+.aw-card .d-arrows li b { font-weight:700; color:var(--text); }
+.aw-card .d-arrows li::before { top:2.5px; }
+.aw-note { margin-top:12px; font-size:7.4px; line-height:1.4; color:var(--text); opacity:.82; }
+
+/* ── Persistent chrome (never rotates) ─────────────────────────────── */
+#top-bar {                         /* #header — white bar, soft shadow */
+  position:absolute;
+  top:0; left:0; right:0;
+  height:var(--hdr-h);
+  z-index:6;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 var(--gutter);
+  background:var(--header-bg);
+  box-shadow:var(--hdr-shadow);
+}
+#logo { display:block; width:var(--logo-w); height:var(--logo-h); }
+#ticker {                          /* set as the active main-menu item */
+  position:relative;
+  padding-bottom:5px;
+  font-family:var(--font-head);
+  font-weight:500;
+  font-size:9.5px;
+  letter-spacing:0.02em;
+  color:var(--text);
+}
+#ticker::after {                   /* .main-menu > li.active > a:after — 2px accent rule */
+  content:'';
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:2px;
+  background:var(--secondary);
+}
+
+#bottom-fixed {
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:var(--bf-h);
+  z-index:5;
+  padding-top:var(--bf-pad);
+  background:var(--white);
+  box-shadow:0 -1px 0 var(--rule);
+}
+
+/* Slider dots: rings, filled when active (.row-background-slider .slick-dots) */
+#dots {
+  display:flex;
+  align-items:center;
+  gap:2px;
+  height:var(--ctrl-h);
+  margin:0 0 var(--bf-gap) calc(var(--gutter) - 4px);
+}
+.dot { position:relative; width:18px; height:18px; }
+.dot::before {
+  content:'';
+  position:absolute;
+  inset:5px;
+  border-radius:50%;
+  background-color:var(--grey);
+  transition:background-color .3s ease;
+}
+.dot.active::before { background-color:var(--secondary); }
+
+.nav-arrow {                       /* round control, like the slider's pause button */
+  position:absolute;
+  z-index:6;
+  bottom:calc(var(--foot-h) + var(--bf-gap-2) + var(--cta-h) + var(--bf-gap));
+  width:var(--ctrl-h);
+  height:var(--ctrl-h);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  border:1.5px solid var(--primary);
+  background:transparent;
+  color:var(--primary);
+  transition:background-color .2s ease, transform .15s ease;
+}
+.nav-arrow svg { width:11px; height:11px; }
+.nav-arrow:hover { background:var(--grad-to); }
+.nav-arrow:active { transform:scale(0.9); }
+#arrow-next { right:var(--gutter); }
+#arrow-prev { right:calc(var(--gutter) + var(--ctrl-h) + 6px); }
+
+/* CTA — the site's .btn: flat vermilion pill, white bold uppercase label, arrow after it */
+#cta {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  height:var(--cta-h);
+  margin:0 var(--gutter) 8px;
+  border-radius:var(--btn-radius);
+  background:var(--primary);
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:11.5px;
+  letter-spacing:0.03em;
+  text-transform:uppercase;
+  line-height:1;
+  color:var(--btn-ink);
+  box-shadow:0 6px 14px color-mix(in srgb, var(--primary) 26%, transparent);
+  transition:background-color .2s ease, transform .2s ease;
+}
+#cta-arrow {
+  width:15px; height:15px;
+  fill:var(--btn-ink);
+  animation:d-nudge 1.4s ease-in-out 2.4s 4;
+}
+#banner:hover #cta, #cta:hover, #cta:focus-visible { background:color-mix(in srgb, var(--primary) 84%, black); }
+@keyframes d-nudge { 0%, 100% { transform:translateX(0); } 50% { transform:translateX(3px); } }
+
+/* Required disclosure — set in the site's footer strip. Two lines fit; it names
+   what the slides actually forward-look about rather than a generic line. */
+#fls {
+  height:var(--foot-h);
+  padding:6px 10px 0;
+  border-top:1.25px solid var(--grey);
+  background:var(--white);
+  font-size:7.3px;
+  font-weight:500;
+  line-height:9.6px;
+  text-align:left;
+  overflow:hidden;
+  color:var(--text);
+}
+#fls span { display:block; text-wrap-style:pretty; }
+
+/* ── Entrance sequence (initial load only) ─────────────────────────── */
+.reveal {
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .7s var(--ease), transform .7s var(--ease);
+}
+#top-bar.reveal { transform:translateY(-8px); }
+#banner.is-live .reveal { opacity:1; transform:none; }
+#top-bar[data-delay="0"] { transition-delay:.05s; }
+#bottom-fixed[data-delay="4"] { transition-delay:.45s; }
+
+#click-tag-wrapper { position:absolute; width:0; height:0; overflow:hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .d-photo, #cta-arrow { animation:none; }
+  .reveal { transition-duration:.01s; transition-delay:0s !important; }
+  .slide, .slide > *, .d-label::before { transition-duration:.2s; transition-delay:0s; }
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="ad.size" content="width=300,height=600">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="viewport" content="width=300,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Cyabra, Inc. — Investor Relations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!--
+  Cyabra, Inc. — IR display banner, 300x600 — Concept D: Corporate site / brand-native (version 3).
+  Promotes: https://media-console-group.github.io/cyabra-ir-concept-v3/
+  Styled from the company's own CORPORATE website (https://cyabra.com/), not the IR concept page that A-C are built from:
+  its white header and logo, Plus Jakarta Sans, vermilion #EE4500 titles, the peach-to-cream hero gradient, amber rules, the
+  pill button and the white footer. "Homepage in miniature": 1 hero (title, scanner illustration), 2 "Stay Ahead of the
+  Narrative" features split (three vermilion-barred items, white product card over the orange blob), 3 stats, 4 the Gartner
+  awards band. Images are the site's own files, cropped into assets/; assets/logo.svg is the site's own logo.
+  Capability words are the company's, attributed as such. Every number comes from the project fact sheet (.tmp/facts.md).
+  Written by .tmp/gen_d.py; style.css is hand-edited.
+-->
+
+<div id="banner" aria-label="Cyabra, Inc. investor relations advertisement">
+
+  <div id="slides">
+
+    <!-- Slide 1 — Hero -->
+    <section class="slide m-hero" data-index="0">
+      <!-- Module: corporate homepage hero (.hero-section): peach-to-cream gradient (72deg #F9CEA8 to #FCF9D8), vermilion 700 title,
+           bold body copy, the scanner illustration at the right. Facts: [HOME] hero title and description, attributed;
+           [10-Q Jun 30] Q2 revenue $1,853K vs $1,331K (+39%); Q1 +12% (10-Q Mar 31); [Release Jul 1] Gartner Market Shaper. -->
+      <img class="hero-art" src="assets/slide-1.webp" alt="The company's illustration of its scanning approach: a ring-shaped scanner passing a beam over social posts and accounts" width="560" height="444">
+      <div class="hero-copy">
+        <h2>Restoring Trust and Authenticity for Global Enterprises &amp; Governments</h2>
+        <p class="hero-desc">The company says its narrative intelligence solution analyzes actors, behaviors and content to distinguish authentic activity from coordinated manipulation.</p>
+        <div class="d-stats">
+          <div class="d-stat">
+            <p class="d-value">+39%</p>
+            <p class="d-label">Q2 revenue, $1.9M vs. $1.3M a year earlier (Q1: up&nbsp;12%)</p>
+          </div>
+          <div class="d-stat">
+            <p class="d-value">Market Shaper</p>
+            <p class="d-label">Gartner®, June&nbsp;2026</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2 — Stay Ahead of the Narrative -->
+    <section class="slide m-features" data-index="1">
+      <!-- Module: corporate homepage "Stay Ahead of the Narrative" (.features-split-section): the orange-blob background (bg-pr-fe.jpg),
+           dark 700 heading, three vermilion-barred items (uppercase vermilion title, dark copy), the white product card.
+           Facts: [HOME] the three items, verbatim, as the company describes them; the card is the site's own sample interface view. -->
+      <h2>Stay Ahead of the Narrative</h2>
+      <div class="feat"><h3>Map the environment</h3><p>Understand how actors, behaviors, and content connect across platforms.</p></div>
+      <div class="feat"><h3>Assess authenticity</h3><p>Distinguish organic activity from coordinated orchestration.</p></div>
+      <div class="feat"><h3>Evidence-based mitigation</h3><p>Translate evidence and coordination indicators into clear mitigation workflows.</p></div>
+      <figure class="feat-card">
+        <img src="assets/slide-2-chart.png" alt="Sample view from the platform: mentions activity by source over seven days, as shown on cyabra.com" width="500" height="191">
+        <figcaption>Sample interface view from cyabra.com; not a reported result. Capabilities as the company describes them.</figcaption>
+      </figure>
+    </section>
+
+    <!-- Slide 3 — Performance -->
+    <section class="slide m-stats" data-index="2">
+      <!-- Module: a stats block in the site's type (vermilion 700 values over amber rules, dark labels) on the page grey.
+           Facts: [10-Q Jun 30] Q2 revenue 1,853K vs 1,331K (+39%), H1 3,268K vs 2,591K (+26%); Q1 +12% [10-Q Mar 31];
+           [10-Q MD&A] ARR about $8.1M vs $6.3M (+29%), $6.1M at Dec 31, 2025 [8-K Mar 31]; company-defined, not GAAP. -->
+      <div class="stats-head">
+        <h2>Second-quarter revenue up 39% (Q1: up&nbsp;12%)</h2>
+        <p>Unaudited. Source: Cyabra&#8217;s 2026 10-Qs.</p>
+      </div>
+      <div class="d-stats">
+        <div class="d-stat">
+          <p class="d-value">$1.9M</p>
+          <p class="d-label">Q2 2026 revenue, against $1.3M in Q2&nbsp;2025</p>
+        </div>
+        <div class="d-stat">
+          <p class="d-value">$3.3M</p>
+          <p class="d-label">First-half 2026 revenue, up 26% on $2.6M</p>
+        </div>
+        <div class="d-stat">
+          <p class="d-value">$8.1M</p>
+          <p class="d-label">ARR at Jun 30, 2026, up 29% on a year earlier ($6.1M at Dec&nbsp;&#8217;25). Company-defined; not GAAP or a forecast.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4 — Gartner and agreements -->
+    <section class="slide m-awards" data-index="3">
+      <!-- Module: corporate homepage Gartner awards band (.awards-section): vermilion top rule, vermilion 700 title, white card with
+           amber and vermilion squares. Facts: [Release Jul 1] Market Shaper, Gartner EMQ for Narrative Intelligence (26 Jun 2026);
+           [Release Oct 21] Sample Vendor in 10 Hype Cycle reports; [Release Oct 5] FBI IDIQ (eligible to compete for task orders);
+           [Release Sep 30] USSOCOM SOF RACER consortium; [Releases Nov 2, Nov 6] six-figure agreements. -->
+      <h2>Named a Market Shaper in the June 2026 Gartner® Emerging Market Quadrant for Narrative Intelligence</h2>
+      <div class="aw-card">
+        <ul class="d-arrows">
+          <li><b>Gartner®</b> Sample Vendor in 10 Hype Cycle™ reports (Oct&nbsp;21)</li>
+          <li><b>FBI</b> multi-award IDIQ: eligible to compete for task orders (Oct&nbsp;5)</li>
+          <li><b>USSOCOM</b> SOF RACER consortium: accepted (Sep&nbsp;30)</li>
+          <li><b>Six-figure agreements:</b> a Southeast Asian national investigative agency (Nov&nbsp;2) and a major media company (Nov&nbsp;6)</li>
+        </ul>
+      </div>
+      <p class="aw-note">Source: Gartner, Emerging Market Quadrant for Narrative Intelligence — Startup Vendors, 26 June 2026. Company announcements, dated as released.</p>
+    </section>
+
+  </div>
+
+  <!-- Persistent chrome — the corporate site's header, never rotates -->
+  <header id="top-bar" class="reveal" data-delay="0">
+    <img id="logo" src="assets/logo.svg" alt="Cyabra, Inc." width="70" height="24">
+    <span id="ticker">NASDAQ:&nbsp;CYAB</span>
+  </header>
+
+  <!-- Slider controls: outlined round buttons, like the site's back-to-top control -->
+  <button type="button" class="nav-arrow" id="arrow-prev" aria-label="Previous slide">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 6 8l4 5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button type="button" class="nav-arrow" id="arrow-next" aria-label="Next slide">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l4 5-4 5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <div id="bottom-fixed" class="reveal" data-delay="4">
+    <div id="dots" role="tablist" aria-label="Slide selector">
+      <button class="dot active" data-index="0" aria-label="Slide 1: Overview"></button>
+      <button class="dot" data-index="1" aria-label="Slide 2: Stay ahead of the narrative"></button>
+      <button class="dot" data-index="2" aria-label="Slide 3: Business performance"></button>
+      <button class="dot" data-index="3" aria-label="Slide 4: Gartner and agreements"></button>
+    </div>
+
+    <!-- The corporate site's pill button: flat vermilion, white uppercase label, arrow after it -->
+    <a href="#" id="cta">
+      <span>Investor information</span>
+      <svg id="cta-arrow" viewBox="0 0 24 25" aria-hidden="true"><path d="M12 4.18066L10.585 5.59566L16.17 11.1807H4V13.1807H16.17L10.585 18.7657L12 20.1807L20 12.1807L12 4.18066Z"/></svg>
+    </a>
+
+    <!-- The corporate site's white footer, carrying the required disclosure -->
+    <p id="fls"><span>Advertisement. Not an offer, advice or recommendation. Revenue unaudited, as of Jun 30, 2026; ARR is company-defined, not GAAP. Gartner® is a trademark of Gartner, Inc.; Gartner does not endorse any vendor, product or service in its research. Forward-looking statements on growth, contracts and products involve risks and uncertainties. See SEC filings for risk factors.</span></p>
+  </div>
+
+  <!-- Standard HTML5-ad click-tag plumbing -->
+  <div id="click-tag-wrapper"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

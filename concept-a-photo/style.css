@@ -1,0 +1,340 @@
+/* ── Brand tokens — read from the IR concept page (gracinting.github.io/cyabra-ir-concept): --accent #ec4824 (the
+   vermilion end of the logo gradient), --accent-2 #fdb811 (its amber end), --deep #071010 (the wordmark ink and the hero
+   ground), --accent-lt #ffc0b1 (the page's text-on-dark tint). The rest derive from them (color-mix: Chrome 111+ / Safari 16.2+). ── */
+:root {
+  --dark:      #071010;
+  --dark-2:    color-mix(in srgb, var(--dark) 70%, black);
+  --navy:      #030808;
+  --accent:    #ec4824;
+  --accent-d:  color-mix(in srgb, var(--accent) 82%, black);
+  --accent-lt: #ffc0b1;
+  --gold:      #fdb811;
+  --gold-lt:   #fec761;
+  --white:     #ffffff;
+  --cta-ink:   var(--dark);   /* the page's own primary-light button: deep ink on the pale accent (13:1) */
+  --font-head: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font:      'Plus Jakarta Sans', system-ui, sans-serif;
+  --mono:      'Martian Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --ease:      cubic-bezier(0.16,1,0.3,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:300px; height:600px; overflow:hidden; background:var(--dark); }
+body { font-family:var(--font); -webkit-font-smoothing:antialiased; }
+a { text-decoration:none; color:inherit; }
+button { border:0; background:none; font:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+
+/* ── Canvas ─────────────────────────────────────────────────────────
+   Fixed 300x600 stage. A crossfading slide stack sits at the bottom of
+   the z-order; persistent chrome (logo, nav, CTA, disclosure) is pinned on
+   top of it and never rotates. */
+#banner {
+  position:relative;
+  width:300px;
+  height:600px;
+  overflow:hidden;
+  cursor:pointer;
+  background:var(--dark);
+}
+
+/* ── Slide stack ────────────────────────────────────────────────── */
+#slides { position:absolute; inset:0; z-index:1; }
+.mk-defs { position:absolute; width:0; height:0; overflow:hidden; }
+
+.slide {
+  position:absolute;
+  inset:0;
+  opacity:0;
+  z-index:1;
+  pointer-events:none;
+  transition:opacity 0.9s ease;
+}
+.slide.active { opacity:1; z-index:2; pointer-events:auto; }
+
+/* The slide ground is the IR page's own hero: near-black teal with a vermilion glow where the bundle runs. */
+.slide-bg {
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  z-index:1;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+.slide-bg.motif {
+  animation:none;   /* no Ken Burns: it would scale the art */
+  background:
+    radial-gradient(70% 26% at 34% 24%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 72%),
+    linear-gradient(180deg, color-mix(in srgb, var(--dark) 88%, var(--accent)) 0, var(--dark) 38%, var(--dark) 100%);
+}
+.slide-bg.motif svg { position:absolute; left:0; top:0; width:300px; height:600px; overflow:visible; }
+
+.slide-scrim-top, .slide-scrim-bottom {
+  position:absolute;
+  left:0; right:0;
+  z-index:2;
+  pointer-events:none;
+}
+.slide-scrim-top {
+  top:0; height:64px;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--dark-2) 82%, transparent) 0%, color-mix(in srgb, var(--dark-2) 0%, transparent) 100%);
+}
+.slide-scrim-bottom {
+  bottom:0; height:352px;
+  background:linear-gradient(0deg, var(--dark) 0%, color-mix(in srgb, var(--dark) 94%, transparent) 46%, color-mix(in srgb, var(--dark) 0%, transparent) 100%);
+}
+
+.slide-copy {
+  position:absolute;
+  inset:0;
+  z-index:3;
+  transform:translateY(12px);
+  transition:transform 0.9s var(--ease);
+}
+.slide.active .slide-copy { transform:translateY(0); }
+
+/* ── Network schematic (inline SVG inside the platform card) ─────── */
+.s-net { display:block; overflow:visible; }
+.s-net .m-real { fill:rgba(255,255,255,0.5); }
+.s-net .m-fake { fill:var(--accent); }
+.s-net .m-src { fill:var(--gold); }
+.s-net .m-ring { fill:none; stroke:var(--gold); stroke-opacity:0.5; stroke-width:1px; }
+.s-net .m-edge { stroke:var(--accent); stroke-opacity:0.8; stroke-width:1px; }
+
+/* ── Slide content, in Concept D's hierarchy: numbered section label > one bold headline > number cards ── */
+:root { --grad: linear-gradient(100deg, var(--gold) 0%, #f7761c 48%, var(--accent) 100%); }
+
+.s-body { position:absolute; left:18px; right:18px; top:70px; }
+.s-body.s-hero { top:172px; }
+.s-body.roomy > * + * { margin-top:14px; }
+/* slide 1 and 4: let the art (contour field, owl) show behind the lower half */
+.slide[data-index="0"] .slide-scrim-bottom { height:330px; }
+.slide[data-index="3"] .slide-scrim-bottom { height:150px; }
+.s-body > * + * { margin-top:9px; }
+.s-body p { text-wrap-style:pretty; }
+
+.s-sec { display:flex; align-items:center; gap:8px; }
+.s-badge {                                    /* the v3 page's section numeral: large, light weight, then a mono label and the amber-to-vermilion rule */
+  flex:none; font-family:var(--font-head); font-weight:200; font-size:25px; line-height:1; letter-spacing:-0.02em; color:var(--white);
+  font-variant-numeric:tabular-nums;
+}
+.s-sec::after { content:''; flex:1; min-width:14px; height:2px; border-radius:1px; background:linear-gradient(90deg, var(--gold), var(--accent)); opacity:.9; }
+.s-eyebrow {
+  font-family:var(--mono); font-weight:500; font-size:7.2px; letter-spacing:0.09em; text-transform:uppercase;
+  color:var(--accent-lt);
+}
+.s-eyebrow.plain { display:flex; align-items:center; gap:8px; }
+.s-eyebrow.plain::before { content:''; width:18px; height:3px; border-radius:2px; background:var(--grad); flex:none; }
+/* the page's source chip: mono, dotted underline */
+.src { text-decoration:underline; text-decoration-style:dotted; text-underline-offset:3px; text-transform:none; letter-spacing:0; }
+
+.s-h {
+  font-family:var(--font-head); font-weight:700; font-size:21px; line-height:1.1; letter-spacing:-0.025em; color:var(--white);
+}
+.s-h em { font-style:normal; font-weight:800; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.s-h.hero { font-size:28px; line-height:1.06; letter-spacing:-0.032em; }
+.s-h .lt { font-weight:300; }
+.s-fn { font-size:7.8px; line-height:1.3; color:rgba(255,255,255,0.7); }
+.s-sub { font-size:10px; line-height:1.45; color:rgba(255,255,255,0.84); }
+.s-hero .s-sub { font-size:10.4px; max-width:252px; }
+
+.s-chips { display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin-top:13px !important; }
+.s-chip {
+  font-family:var(--mono); font-weight:500; font-size:7.6px; line-height:1; letter-spacing:0.02em;
+  padding:8px 12px; border:1px solid rgba(255,255,255,0.24); border-radius:100px;
+  background:color-mix(in srgb, var(--dark) 70%, transparent); color:rgba(255,255,255,0.92);
+}
+.s-chip b { color:var(--gold-lt); font-weight:600; }
+.s-chip.g { border-color:color-mix(in srgb, var(--accent) 70%, transparent); background:linear-gradient(150deg, color-mix(in srgb, var(--gold) 18%, transparent), color-mix(in srgb, var(--accent) 10%, transparent)), color-mix(in srgb, var(--dark) 70%, transparent); }
+
+.s-card {
+  position:relative; overflow:hidden;
+  display:grid; grid-template-columns:1fr 104px; align-items:end; gap:8px;
+  padding:12px 14px 10px;
+  border-radius:14px;
+  background:color-mix(in srgb, var(--dark) 78%, transparent);
+  border:1px solid rgba(255,255,255,0.16);
+  box-shadow:0 12px 28px rgba(0,0,0,0.3);
+  backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
+}
+.s-card.glow::before {                        /* the glow in the corner of the site's ARR card */
+  content:''; position:absolute; right:-30px; top:-34px; width:120px; height:120px; border-radius:50%;
+  background:radial-gradient(circle, color-mix(in srgb, var(--accent) 50%, transparent), transparent 68%);
+}
+.s-card > * { position:relative; }
+.s-num {
+  font-family:var(--font-head); font-weight:800; font-size:33px; line-height:1; letter-spacing:-0.03em; font-variant-numeric:tabular-nums;
+  background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.s-flag { margin-top:5px; font-family:var(--mono); font-weight:600; font-size:7.2px; letter-spacing:0.04em; color:var(--gold-lt); }
+.s-lab { margin-top:6px; font-family:var(--font-head); font-weight:700; font-size:9.6px; line-height:1.3; color:var(--white); }
+.s-lab.mono { margin-top:6px; font-family:var(--mono); font-weight:500; font-size:6.6px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-lt); }
+.s-note { margin-top:4px; font-size:8.6px; line-height:1.4; color:rgba(255,255,255,0.82); }
+
+.s-bars { position:relative; display:flex; align-items:flex-end; justify-content:center; gap:10px; height:80px; }
+.s-bars::after { content:''; position:absolute; left:0; right:0; bottom:13px; height:1px; background:rgba(255,255,255,0.3); }
+.s-bar { position:relative; z-index:1; width:28px; display:flex; flex-direction:column; align-items:center; gap:3px; }
+.s-bars .s-bar:nth-child(3):last-child, .s-bars .s-bar:nth-child(2):nth-last-child(2) { width:26px; }
+.s-bar i { display:block; width:100%; border-radius:4px 4px 0 0; background:rgba(255,255,255,0.78); transform-origin:center bottom; }
+.s-bar.now i { background:linear-gradient(180deg, var(--gold), var(--accent)); }
+.s-bar b { font-family:var(--font-head); font-weight:800; font-size:8.4px; color:var(--white); white-space:nowrap; }
+.s-bar.now b { color:var(--gold-lt); }
+.s-bar span { font-family:var(--mono); font-weight:500; font-size:5.6px; letter-spacing:0.04em; color:rgba(255,255,255,0.7); white-space:nowrap; }
+.slide.active .s-bar i { animation:bar-grow 1.1s var(--ease) 0.15s both; }
+@keyframes bar-grow { from { transform:scaleY(0.02); } }
+
+/* platform slide: the network card and three compact steps */
+.s-card.net { display:block; padding:9px 9px 7px; }
+.s-cap { display:block; margin-bottom:3px; font-family:var(--mono); font-weight:500; font-size:6px; letter-spacing:0.1em; color:rgba(255,255,255,0.62); }
+.s-step {
+  display:grid; grid-template-columns:18px 1fr; gap:6px; align-items:start;
+  padding:6px 12px 6px 10px;
+  border-radius:11px;
+  background:color-mix(in srgb, var(--dark) 78%, transparent);
+  border:1px solid rgba(255,255,255,0.16);
+}
+.s-body > .s-step { margin-top:5px; }
+.s-sn { font-family:var(--font-head); font-weight:800; font-size:12px; line-height:1.2; color:var(--accent); }
+.s-k { display:inline-block; margin-right:7px; font-family:var(--mono); font-weight:600; font-size:6.4px; letter-spacing:0.14em; color:var(--accent-lt); vertical-align:1px; }
+.s-step h3 { display:inline; font-family:var(--font-head); font-weight:700; font-size:11.6px; letter-spacing:-0.015em; color:var(--white); }
+.s-step p { margin-top:2px; font-size:8.8px; line-height:1.38; color:rgba(255,255,255,0.82); }
+
+/* listing slide: ticker card and two figure tiles */
+.s-tick {
+  padding:11px 14px 12px; text-align:center;
+  border-radius:14px; background:color-mix(in srgb, var(--dark) 70%, transparent); border:1px solid rgba(255,255,255,0.2);
+}
+.s-tick .tl { font-family:var(--mono); font-weight:500; font-size:6.2px; letter-spacing:0.1em; color:var(--accent-lt); }
+.s-tick .tn { margin-top:5px; font-family:var(--font-head); font-weight:800; font-size:31px; line-height:1; letter-spacing:-0.02em; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.s-tick .ts { margin-top:6px; font-family:var(--mono); font-weight:500; font-size:6.8px; letter-spacing:0.04em; color:rgba(255,255,255,0.78); }
+.s-tiles { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.s-card.tile { display:block; padding:11px 11px 10px; }
+.s-card.tile .s-num { font-size:25px; }
+.s-card.tile .s-lab.mono { min-height:16px; }
+
+/* validation slide: three one-line-ish rows (label + date, then the release's words) */
+.s-row {
+  display:grid; grid-template-columns:74px 1fr; gap:6px; align-items:center;
+  padding:7px 11px 7px 10px; border-radius:11px;
+  background:color-mix(in srgb, var(--dark) 78%, transparent); border:1px solid rgba(255,255,255,0.16);
+}
+.s-body > .s-row { margin-top:6px; }
+.s-rk b { display:block; font-family:var(--font-head); font-weight:800; font-size:12.5px; line-height:1.1; letter-spacing:-0.01em; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.s-rk span { display:block; margin-top:3px; font-family:var(--mono); font-weight:500; font-size:6px; letter-spacing:0.08em; color:var(--accent-lt); white-space:nowrap; }
+.s-row p { font-size:8.6px; line-height:1.36; color:rgba(255,255,255,0.86); }
+
+/* ── Persistent chrome (never rotates) ─────────────────────────── */
+#top-bar {
+  position:absolute;
+  top:0; left:0; right:0;
+  z-index:5;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:16px 18px 0;
+}
+#logo { display:block; width:67px; height:23px; }
+#eyebrow {
+  font-family:var(--mono);
+  font-weight:500;
+  font-size:7.4px;
+  letter-spacing:0.1em;
+  color:var(--accent-lt);
+}
+
+.nav-arrow {
+  position:absolute;
+  top:-6px;                       /* centred on the dots row (the arrows live inside #bottom-fixed) */
+  width:24px; height:24px;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:color-mix(in srgb, var(--dark) 55%, transparent);
+  border:1px solid rgba(255,255,255,0.28);
+  border-radius:50%;
+  color:rgba(255,255,255,0.92);
+  transition:background .2s ease, transform .15s ease;
+}
+.nav-arrow svg { width:12px; height:12px; }
+.nav-arrow:active { transform:scale(0.9); background:color-mix(in srgb, var(--accent) 55%, transparent); }
+#arrow-prev { right:48px; }
+#arrow-next { right:18px; }
+
+#bottom-fixed {
+  position:absolute;
+  left:0; right:0; bottom:0;
+  z-index:5;
+  padding:0 18px 10px;
+}
+
+#dots {
+  display:flex;
+  gap:6px;
+  margin-bottom:6px;
+}
+.dot {
+  width:14px; height:3px;
+  border-radius:2px;
+  background:rgba(255,255,255,0.3);
+  transition:background .3s ease, width .3s ease;
+  padding:6px 0;
+  background-clip:content-box;
+  box-sizing:content-box;
+}
+.dot.active { background-color:var(--accent); width:20px; }  /* background-color, not the shorthand: the shorthand resets background-clip and paints the whole 15px hit area as a square */
+
+#cta {
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  height:40px;
+  background:var(--accent-lt);
+  border-radius:8px;
+  color:var(--cta-ink);
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:12.5px;
+  letter-spacing:0.02em;
+  box-shadow:0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent);
+  animation:cta-pulse 1.8s ease-in-out 2.6s 6;
+}
+#cta-arrow { width:13px; height:13px; }
+
+/* Required disclosure under the CTA: names the risks, in the page's own typeface at a size a person can read */
+#disclosure {
+  margin:8px -4px 0;
+  font-family:var(--font);
+  font-weight:500;
+  font-size:7.5px;
+  letter-spacing:0;
+  line-height:1.32;
+  text-align:left;
+  text-wrap-style:pretty;
+  color:rgba(255,255,255,0.86);
+}
+@keyframes cta-pulse {
+  0%, 100% { box-shadow:0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent); }
+  50%      { box-shadow:0 8px 26px color-mix(in srgb, var(--accent) 55%, transparent), 0 0 0 5px color-mix(in srgb, var(--accent) 14%, transparent); }
+}
+
+/* ── Entrance sequence (initial load only) ─────────────────────── */
+.reveal {
+  opacity:0;
+  transform:translateY(14px);
+  transition:opacity .7s var(--ease), transform .7s var(--ease);
+}
+#banner.is-live .reveal { opacity:1; transform:none; }
+#top-bar[data-delay="0"] { transition-delay:.05s; }
+#bottom-fixed[data-delay="4"] { transition-delay:.55s; }
+
+#click-tag-wrapper { position:absolute; width:0; height:0; overflow:hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide.active .m-bar { animation:none; }
+  #cta { animation:none; }
+  .reveal { transition-duration:.01s; transition-delay:0s !important; }
+  .slide, .slide-copy { transition-duration:.2s; }
+}
